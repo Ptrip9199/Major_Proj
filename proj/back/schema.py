@@ -4,7 +4,7 @@ from graphene.relay import Node
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 from models import Patient as PatientModel
 from models import Visits as VisitModel
-from models import Contact as ContactModel
+
 from database import conn
 
 conn()
@@ -20,17 +20,33 @@ class Visits(MongoengineObjectType):
         model = VisitModel
         interfaces = (Node,)
 
-class Contact(MongoengineObjectType):
-    class Meta:
-        model = ContactModel
-        interfaces = (Node,)
+
+class CreatePatient(graphene.Mutation):
+    """docstring for CreatePatients"""
+    class Argumenrs:
+            fName = graphene.String()
+            lMame = graphene.String()
+
+    ok = graphene.Boolean()
+    patient = graphene.Field(lambda : Patients)
+
+    def mutate(root, info , fName,lName):
+        pat = PatientModel(f_name=fName , l_name=lName )
+        pat.save()
+        return CreatePatient(patient = pat)
+
 
 
 class Query(graphene.ObjectType):
     name = 'Query'
     find_patients = MongoengineConnectionField(Patients)
     find_visits = MongoengineConnectionField(Visits)
-    visit = graphene.Field(Visits) 
-    patient = graphene.Field(Patients)
 
-schema=graphene.Schema( query=Query )
+
+class Mutation(graphene.ObjectType):
+    """docstring for Mutations"""
+    Create_patient = CreatePatient.Field()
+
+        
+
+schema=graphene.Schema( query=Query , mutation=Mutation)

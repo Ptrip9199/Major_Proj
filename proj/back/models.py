@@ -11,11 +11,6 @@ from mongoengine.fields import (
 )
 #for each patient
 
-class Contact(EmbeddedDocument):
-
-    mobile_nm = StringField()
-    email_id = StringField()
-
 
 class Patient(Document):
 
@@ -24,7 +19,8 @@ class Patient(Document):
     l_name = StringField()
     DoB = DateTimeField()
     Parent_name = ListField(StringField(default=[]))
-    contact = EmbeddedDocumentField(Contact)
+    mobile_nm = StringField()
+    email_id = StringField()
     visits_done = ListField(ReferenceField("Visits"))
 
 #visits for all patients. Each visit has an id for the patient.
