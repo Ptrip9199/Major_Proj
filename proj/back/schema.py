@@ -13,6 +13,7 @@ class Patients (MongoengineObjectType):
         model = PatientModel
         interfaces = (Node,)
 
+
 class Visits(MongoengineObjectType):
     class Meta:
         model = VisitModel
@@ -21,8 +22,29 @@ class Visits(MongoengineObjectType):
 #query class 
 class Query(graphene.ObjectType):
     name = 'Query'
-    find_patients = MongoengineConnectionField(Patients)
-    find_visits = MongoengineConnectionField(Visits)
+#    find_patients = MongoengineConnectionField(Patients)
+#    find_visits = MongoengineConnectionField(Visits)
+    patients = graphene.List(Patients,last=graphene.Int(default_value=0),fname=graphene.String(default_value="NULL"))
+    visits = graphene.List(Visits,last=graphene.Int(default_value=0))
+
+    def resolve_visits(self,info,last):
+        data = VisitModel.objects.all()
+        if last != 0:
+            data = data[data.count()-last:]
+        return data
+
+    def resolve_patients(self,info,last,fname):
+        if fname!="NULL":
+            data = PatientModel.objects(f_name=fname)
+
+        else:
+            data = PatientModel.objects.all()
+        
+        for dat in data:
+            dat.visits_done = dat.visits_done[-(last):]
+                
+        return data
+
 
 #classes for Mutations
 
