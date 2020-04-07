@@ -5,13 +5,19 @@ import "../styles/Login.css";
 export default function Login(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  console.log(props.userHasAuthenticated);
   function validateForm() {
     return email.length > 0 && password.length > 0;
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    try{
+      //await -> call API for logging in.
+      props.userHasAuthenticated(true);
+    }catch(e){
+      alert(e.message);
+    }
   }
 
   return (
@@ -41,18 +47,3 @@ export default function Login(props) {
     </div>
   );
 }
-
-// async function handleSubmit(event){
-//   event.preventDefault();
-//   try{
-//     if (email == "test@test.com" &&   password == "test"){
-//       alert("Logged In");  
-//     }
-//     else
-//     {
-//       alert("Wrong credentials");
-//     }
-//   }catch(e){
-//     alert(e.message);
-//   }
-// }
