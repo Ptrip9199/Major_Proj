@@ -1,47 +1,69 @@
-import React , {useState} from "react";
-import { Link } from "react-router-dom";
-import { Nav, Navbar, NavItem } from "react-bootstrap";
-import "./styles/App.css";
-import Routes from "./Routes";
-import { LinkContainer } from "react-router-bootstrap";
-import  { Redirect } from "react-router-dom";
+import React from 'react';
+import './App.css';
+import {Query } from 'react-apollo';
+import { gql } from "apollo-boost";
 
-
-
-function App(props) {
-  const [isAuthenticated, userHasAuthenticated] = useState(false);
-  function handleLogout() {
-  userHasAuthenticated(false);
-  return <Redirect to="/Login"/>
-  }
-  return (
-    <div className="App container">
-      <Navbar fluid collapseOnSelect>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <Link to="/">Welcome</Link>
-          </Navbar.Brand>
-          <Navbar.Toggle />
-        </Navbar.Header>
-        <Navbar.Collapse>
-          <Nav pullRight>
-          {isAuthenticated
-            ?<><NavItem onClick = {handleLogout}>Logout</NavItem>
-            <LinkContainer to="/DataLoad">
-              <NavItem>Patient details</NavItem>
-            </LinkContainer></>
-            :<>
-            <LinkContainer to="/login">
-              <NavItem>Login</NavItem>
-            </LinkContainer>
-            </>
+const get_pat = gql`
+  {
+    patients{
+      fName
+      lName
+      emailId
+      mobileNm
+      DoB
+      ParentName
+      visitsDone{
+        edges{
+          node{
+            height
+            weight
+            date
           }
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-      <Routes appProps={{ isAuthenticated, userHasAuthenticated }} />
-    </div>
-  );
+        }
+      }
+    }
+  }
+`
+
+
+const App = () => {
+  return(
+
+    <Query query={get_pat}>
+    {({loading, error, data}) => {
+      if (loading) return <h1>loading...</h1>;
+      if (error) return <h1>Error {error}</h1>;
+      return(
+        <div>
+        {data.patients.map( patient => 
+          <>
+          <p>{patient.fName} &nbsp; {patient.lName}</p>
+          <p> Contact: {patient.emailId} {patient.mobileNm}</p> 
+          <p> {patient.ParentName}</p>
+          <table>
+          <tr>
+          <th>Date</th>
+          <th>weight</th>
+          <th>height</th>
+          </tr>
+          {patient.visitsDone.edges.map(visit => 
+            <>
+            <tr>
+            <td>{visit.node.date}</td>
+            <td>{visit.node.weight}</td>
+            <td>{visit.node.height}</td>
+            </tr>
+            </>)}
+          </table>
+          </>
+          
+          )}
+          
+          </div>
+      );
+    }}
+    </Query>
+    );
 }
 
 export default App;
