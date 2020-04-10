@@ -5,8 +5,9 @@ import "../styles/Login.css";
 export default function Login(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  console.log(props.userHasAuthenticated);
-  function validateForm() {
+  
+
+    function validateForm() {
     return email.length > 0 && password.length > 0;
   }
 
