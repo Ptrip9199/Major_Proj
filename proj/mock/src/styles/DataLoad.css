@@ -1,0 +1,9 @@
+ .DataLoad {
+    padding: 60px 0;
+  }
+
+  .DataLoad form {
+    margin: 0 auto;
+    max-width: 320px;
+    float: left;
+  }

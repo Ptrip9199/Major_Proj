@@ -24,7 +24,7 @@ class Query(graphene.ObjectType):
     name = 'Query'
 #    find_patients = MongoengineConnectionField(Patients)
 #    find_visits = MongoengineConnectionField(Visits)
-    patients = graphene.List(Patients,last=graphene.Int(default_value=0),fname=graphene.String(default_value="NULL"))
+    patients = graphene.List(Patients,last=graphene.Int(default_value=0),fname=graphene.String(default_value="NULL"),mobNm=graphene.String(default_value="NULL"))
     visits = graphene.List(Visits,last=graphene.Int(default_value=0))
 
     def resolve_visits(self,info,last):
@@ -33,10 +33,12 @@ class Query(graphene.ObjectType):
             data = data[data.count()-last:]
         return data
 
-    def resolve_patients(self,info,last,fname):
+    def resolve_patients(self,info,last,fname,mobNm):
         if fname!="NULL":
             data = PatientModel.objects(f_name=fname)
 
+        if mobNm!="NULL":
+            data = PatientModel.objects(mobile_nm= mobNm)
         else:
             data = PatientModel.objects.all()
         
@@ -64,7 +66,13 @@ class CreatePatient(graphene.Mutation):
     patient = graphene.Field(lambda: Patients)
 
     def mutate(self,info,fname,lname,DoB,Parentname,mobilenm,emailid,visitsdone=[]):
-        pat = PatientModel()
+      #tryin to have unique mobile number for each patient  
+      #add some authentication, so thst a perseon is not able to modify some other record 
+        if ( PatientModel.objects(mobile_nm= mobilenm) ):
+            pat = PatientModel.objects(mobile_nm= mobilenm)[0]
+        else:
+            pat = PatientModel()
+        
         pat.f_name = fname
         pat.l_name = lname
         pat.DoB = DoB
