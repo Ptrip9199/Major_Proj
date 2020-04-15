@@ -1,35 +1,38 @@
 import React,{useState} from 'react';
 import {Button} from 'react-bootstrap';
-import { gql } from "apollo-boost";
+import {Form} from "react-bootstrap";
 import {useLazyQuery} from "@apollo/react-hooks";
+import PatientLoad from "./PatientLoad";
+import {PATIENT_SEARCH} from "./graphql";
+import {Spinner} from 'react-bootstrap';
+// import {gql} from "apollo-boost";
+
+// const PATIENT_SEARCH = gql`
+//   query($mobNm:String!) {
+//     patients(mobNm: $mobNm){
+//       id
+//       fName
+//       lName
+//       emailId
+//       mobileNm
+//       DoB
+//       ParentName
+//       visitsDone{
+//         edges{
+//           node{
+//             id
+//             height
+//             weight
+//             date
+//           }
+//         }
+//       }
+//     }
+//   }
+// `
 
 
-const PATIENT_SEARCH = gql`
-  query($mobNm:String!) {
-    patients(mobNm: $mobNm){
-      id
-      fName
-      lName
-      emailId
-      mobileNm
-      DoB
-      ParentName
-      visitsDone{
-        edges{
-          node{
-            id
-            height
-            weight
-            date
-          }
-        }
-      }
-    }
-  }
-`
-
-
-const PatientSearch = () =>  {
+function PatientSearch ()  {
 	//const client = useApolloClient();
 	const [mob_num, setmob_num]  =  useState("");
 	function validateForm() {
@@ -42,51 +45,20 @@ const PatientSearch = () =>  {
    if(error){
    	return <p>error</p>;
    }
-   if(loading) return <p>Loading...</p>
+   if(loading) return <Spinner animation="border" role="status" />
 
    if(data)
        return (
-            <div>
-           {data.patients.map( patient => 
-            <li key={patient.id}>
-           <p>{patient.fName} &nbsp; {patient.lName}</p>
-           <p>{patient.DoB}</p>
-            <p> Contact: {patient.emailId} {patient.mobileNm}</p> 
-            <p> {patient.ParentName}</p>
-            <table>
-            <thead>
-            <tr>
-            <th>Date</th>
-            <th>weight</th>
-            <th>height</th>
-            </tr>
-            </thead>
-            <tbody>
-            {patient.visitsDone.edges.map(visit => 
-              <tr key={visit.node.id}>
-              <td>{visit.node.date}</td>
-              <td>{visit.node.weight}</td>
-              <td>{visit.node.height}</td>
-              </tr>              
-            )}
-            </tbody>
-            </table>
-            </li>
-          
-          )}
-        </div>
+            <PatientLoad props={data}/>
         );
 
 	return (
 		<>
-		<form onSubmit = {e => {
+		<Form onSubmit = {e => {
       e.preventDefault();
       loaddata({variables :mob_num})
-      {
-      
-      }
     }}> 
-		<input 
+		<Form.Control 
 		placeholder="Enter mobile number"
 		type = "number"
         value={mob_num}
@@ -95,7 +67,7 @@ const PatientSearch = () =>  {
            Search
          </Button>
       
-         </form>		
+         </Form>		
 		</>
 	)
 

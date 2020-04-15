@@ -7,7 +7,8 @@ from mongoengine.fields import (
     StringField,
     IntField,
     GenericReferenceField,
-    LazyReference
+    LazyReference,
+    FloatField
 )
 #for each patient
 
@@ -17,6 +18,7 @@ class Patient(Document):
     meta = {"collection": "Patients","strict":False}
     f_name = StringField()
     l_name = StringField()
+    gender = StringField()
     DoB = DateTimeField()
     Parent_name = ListField(StringField(default=[]))
     mobile_nm = StringField()
@@ -29,5 +31,6 @@ class Visits(Document):
     meta = {"collection": "Visits"}
     date = DateTimeField()
     pat_id = ReferenceField("Patient")
-    weight = IntField()
-    height = IntField()    
+    weight = FloatField()
+    height = IntField()
+    vaccine = ListField(StringField())

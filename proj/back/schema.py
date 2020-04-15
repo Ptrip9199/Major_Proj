@@ -54,29 +54,31 @@ class CreatePatient(graphene.Mutation):
     """docstring for CreatePatients"""
 
     class Arguments:
-        fname = graphene.String(required=True)
+        fname = graphene.String()
         lname = graphene.String()
         DoB = graphene.types.datetime.Date()
+        gender = graphene.String()
         Parentname = graphene.List(graphene.String)
         mobilenm = graphene.String()
         emailid = graphene.String()
+
         #visitsdone = graphene.List(graphene.String)
 
     ok = graphene.Boolean()
     patient = graphene.Field(lambda: Patients)
 
-    def mutate(self,info,fname,lname,DoB,Parentname,mobilenm,emailid,visitsdone=[]):
+    def mutate(self,info,fname,lname,DoB,gender,Parentname,mobilenm,emailid,visitsdone=[]):
       #tryin to have unique mobile number for each patient  
       #add some authentication, so thst a perseon is not able to modify some other record 
-        if ( PatientModel.objects(mobile_nm= mobilenm) ):
-            pat = PatientModel.objects(mobile_nm= mobilenm)[0]
+        if (PatientModel.objects(mobile_nm=mobilenm)):
+            pat = PatientModel.objects(mobile_nm=mobilenm)[0]
         else:
-            pat = PatientModel()
-        
+            pat = PatientModel()        
         pat.f_name = fname
         pat.l_name = lname
         pat.DoB = DoB
         pat.Parent_name = Parentname
+        pat.gender = gender
         pat.mobile_nm = mobilenm
         pat.email_id = emailid
         pat.visits_done=[]
@@ -87,16 +89,16 @@ class CreateVisit(graphene.Mutation):
 
     class Arguments:
         height = graphene.Int()
-        weight = graphene.Int()
+        weight = graphene.Float()
         date = graphene.types.datetime.DateTime()
         pat_id = graphene.String()
-
+        vaccines = graphene.List(graphene.String)
     ok = graphene.Boolean()
     visit = graphene.Field(lambda: Visits)
 #adding a visit requires two things
 # 1. add a visit to the database
 # 2. append the visit id to list in patients
-    def mutate(self,info,height,weight,date,pat_id):
+    def mutate(self,info,height,weight,date,pat_id,vaccines):
         new_vis = VisitModel()
         pat_id = b64decode(pat_id).decode('utf-8').split(':')[1] 
         #extract the mongodb id of the patient. shown in graphql as 'Patients:id' encoded as base64
@@ -105,6 +107,7 @@ class CreateVisit(graphene.Mutation):
         new_vis.weight = weight
         new_vis.pat_id = pat
         new_vis.date = date
+        new_vis.vaccines = vaccines
         new_vis.save()
         pat.visits_done.append(new_vis)
         pat.save()

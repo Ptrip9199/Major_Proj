@@ -1,66 +1,56 @@
-import {useQuery} from '@apollo/react-hooks';
-import { gql } from "apollo-boost";
 import React from 'react'
+import VisitsLoad from "./VisitsLoad";
+import {Form} from "react-bootstrap";
 
-
-
-const get_pat = gql`
-  query($mobNm:String!) {
-    patients(mobNm: $mobNm){
-      fName
-      lName
-      emailId
-      mobileNm
-      DoB
-      ParentName
-      visitsDone{
-        edges{
-          node{
-            height
-            weight
-            date
-          }
-        }
-      }
-    }
-  }
-`
-
-export default function PatientLoad(){
+export default function PatientLoad(props){
  	
- 	const {loading, error, data} = useQuery(get_pat,{variables:{mobNm:"1212121212"}});
-      if (loading) return <h1>loading...</h1>;
-      if (error) return <h1>Error {error}</h1>;
-      return(
+ 	    return(
       	<div>
-      	 {data.patients.map( patient => 
-          <>
-          <p>{patient.fName} &nbsp; {patient.lName}</p>
-          <p> Contact: {patient.emailId} {patient.mobileNm}</p> 
-          <p> {patient.ParentName}</p>
-          <table>
-          <tr>
-          <th>Date</th>
-          <th>weight</th>
-          <th>height</th>
-          </tr>
-          {patient.visitsDone.edges.map(visit => 
-            <>
-            <tr>
-            <td>{visit.node.date}</td>
-            <td>{visit.node.weight}</td>
-            <td>{visit.node.height}</td>
-            </tr>
-            </>)}
-          </table>
-          </>
-          
+      	 {props.props.patients.map( patient => 
+        <>   
+          <Form >
+      <Form.Group>
+      Patient Deatils:
+      <br/>
+      <Form.Control
+      value={patient.fName} disabled
+      />
+      <Form.Control
+      value={patient.lName} disabled
+      />
+      <Form.Control
+      value={patient.DoB} disabled
+      />
+      <br/>
+      </Form.Group>
+      <Form.Group>
+      Parent Info:
+      <br/>
+      <Form.Control
+        value = {patient.ParentName} disabled
+      />
+      <br/>
+      </Form.Group>
+      <Form.Group>
+      Contact:
+      <br/>
+      <Form.Control
+        value={patient.mobileNm} disabled
+      />
+      <Form.Control
+      value={patient.emailId} disabled
+      />
+      <br/>
+      </Form.Group>
+      </Form>     
+      <VisitsLoad props={patient.id} val2={patient.visitsDone}/>
+      </>
           )}
       	</div>
       	);
 
+ 
 }
-
 
 
 
