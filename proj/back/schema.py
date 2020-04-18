@@ -91,18 +91,18 @@ class CreateVisit(graphene.Mutation):
         height = graphene.Int()
         weight = graphene.Float()
         date = graphene.types.datetime.DateTime()
-        pat_id = graphene.String()
+        patid = graphene.String()
         vaccines = graphene.List(graphene.String)
     ok = graphene.Boolean()
     visit = graphene.Field(lambda: Visits)
 #adding a visit requires two things
 # 1. add a visit to the database
 # 2. append the visit id to list in patients
-    def mutate(self,info,height,weight,date,pat_id,vaccines):
+    def mutate(self,info,height,weight,date,patid,vaccines):
         new_vis = VisitModel()
-        pat_id = b64decode(pat_id).decode('utf-8').split(':')[1] 
+        patid = b64decode(patid).decode('utf-8').split(':')[1] 
         #extract the mongodb id of the patient. shown in graphql as 'Patients:id' encoded as base64
-        pat = PatientModel.objects(id=pat_id)[0]
+        pat = PatientModel.objects(id=patid)[0]
         new_vis.height = height
         new_vis.weight = weight
         new_vis.pat_id = pat

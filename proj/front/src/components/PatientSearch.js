@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import {Button} from 'react-bootstrap';
-import {Form} from "react-bootstrap";
+import {Form,Row,Col} from "react-bootstrap";
 import {useLazyQuery} from "@apollo/react-hooks";
 import PatientLoad from "./PatientLoad";
 import {PATIENT_SEARCH} from "./graphql";
@@ -58,15 +58,20 @@ function PatientSearch ()  {
       e.preventDefault();
       loaddata({variables :mob_num})
     }}> 
+    <Row>
+    <Col md={5}>
 		<Form.Control 
 		placeholder="Enter mobile number"
 		type = "number"
         value={mob_num}
         onChange={e=> setmob_num(e.target.value)}/>
+        </Col>
+        <Col>
       <Button disabled={!validateForm()} type="submit" >
            Search
          </Button>
-      
+         </Col>
+      </Row>
          </Form>		
 		</>
 	)

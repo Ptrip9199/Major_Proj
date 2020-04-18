@@ -43,8 +43,8 @@ const PATIENT_SEARCH = gql`
 
 
 const ADD_VISIT = gql`
-	mutation($date:DateTime, $height: Int , $weight: Float, $pat_id:String,$vaccines:[String]){
-  CreateVisit(date:$date,height:$height,weight:$weight,pat_id:$pat_id,vaccines:$vaccines){
+	mutation($date:DateTime, $height: Int , $weight: Float, $patid:String,$vaccines:[String]){
+  CreateVisit(date:$date,height:$height,weight:$weight,patid:$patid,vaccines:$vaccines){
     ok
     visit{
       date

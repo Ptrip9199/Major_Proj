@@ -1,60 +1,61 @@
 import React,{useState} from 'react';
 import {Button} from 'react-bootstrap';
 import {useMutation} from '@apollo/react-hooks';
-import {Form} from 'react-bootstrap';
+import {Form,Col,Row} from 'react-bootstrap';
 import {ADD_VISIT} from "./graphql";
-// import {gql } from "apollo-boost";
-// const ADD_VISIT = gql`
-// 	mutation($date:DateTime, $height: Int , $weight: Float, $patId:String){
-//   CreateVisit(date:$date,height:$height,weight:$weight,patId:$patId){
-//     ok
-//     visit{
-//       date
-//     }
-//   }
-// }
+import PatientSearch from "./PatientSearch";
 
-//`
 
 export default function AddVisits(props){
 	const [height, setheight]  =  useState("");
 	const [weight, setweight]  =  useState("");
-
+	console.log(props.props)
 	function validateForm(){
 		return 1;
 	}
+
+	function done(e){
+		e.preventDefault();
+		return(<PatientSearch/>)
+	}
+
 	const [addVisit,{data}] = useMutation(ADD_VISIT)
 
 	if(data){
 		return(<>
-			Added new visit to pattient
+				<p>Added new visit to patient</p>
+				<Button onClick={done}>OKAY</Button>
 			</>);
 	}
 
 	return(
 		<div>
+		<h2>Add Visits</h2>
 		<Form
 			onSubmit={e => {
 				e.preventDefault()
-				console.log(props)
-				addVisit({variables:{date:(new Date().toISOString()),weight:weight,height:height,pat_id:props.id,vaccines:[]}})
-				console.log("Done")
+				addVisit({variables:{date:(new Date().toISOString().split('.')[0]+"Z"),weight:weight,height:height,patid:props.props,vaccines:[]}})
 			}}
-		>Add Measurementss
+		><h3>Add Measurements</h3>
 			<br/>
+			<Row>
+			<Col sm={5}>
 			<Form.Control 
 				placeholder="Height"
 				type = "number"
 				value= {height}
 				onChange={e=> setheight(e.target.value)}
 			/>
-			<br/>
+			</Col>
+			<Col sm={5}>
 			<Form.Control
 				placeholder="Weight"
 				type = "number"
 				value= {weight}
 				onChange={e=> setweight(e.target.value)}
 			/>
+			</Col>
+			</Row>
 
 			<Button disabled={!validateForm()} type="submit" >
            		Add

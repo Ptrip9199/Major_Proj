@@ -1,9 +1,10 @@
 import React from 'react'
-import {Table} from 'react-bootstrap';
+import {Table,Row,Col} from 'react-bootstrap';
 import AddVisits from "./AddVisits";
 export default function VisitLoad(props,val2){
    return (
     <>
+
 		<Table striped bordered hover>
           <thead>
           <tr>
