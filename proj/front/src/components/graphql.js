@@ -1,8 +1,8 @@
 import {gql} from "apollo-boost";
 
 const ADD_PATIENT_MUTATION = gql`
-mutation($fname:String, $lname:String, $DoB:Date, $Parentname:[String], $mobilenm:String, $emailid:String){
-  CreatePatient(fname:$fname,lname:$lname,DoB: $DoB, Parentname:$Parentname,mobilenm:$mobilenm,emailid:$emailid){
+mutation($fname:String, $lname:String, $DoB:Date, $Parentname:[String], $mobilenm:String, $emailid:String,$gender:String){
+  CreatePatient(fname:$fname,lname:$lname,DoB: $DoB, Parentname:$Parentname,mobilenm:$mobilenm,emailid:$emailid,gender:$gender){
     ok
     patient{
       fName
@@ -34,6 +34,7 @@ const PATIENT_SEARCH = gql`
             height
             weight
             date
+            vaccines
           }
         }
       }
@@ -60,6 +61,7 @@ const ALL_VISITS = gql`
     date
     height
     weight
+    vaccines
     patId{
       fName
     }

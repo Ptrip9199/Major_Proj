@@ -31,7 +31,7 @@ function PatientAdd () {
 	const [ParentNm, setParentNm]  =  useState("");
 	const [mobile, setmobile]  =  useState("");
 	const [email, setemail]  =  useState("");
-
+	const [gender, setgender] = useState("");
 	//TODO:
 	//add a validate for each element seperated and then combine them all later
 
@@ -59,7 +59,7 @@ function PatientAdd () {
 			<Form onSubmit=	{e => {
 				e.preventDefault();
 				console.log("try")
-				addPat({variables:{fname: fName,lname: lName,DoB: DoB, Parentname: ParentNm.split(","),mobilenm: mobile.toString(),emailid: email}});
+				addPat({variables:{fname: fName,lname: lName,DoB: DoB, Parentname: ParentNm.split(","),mobilenm: mobile.toString(),emailid: email, gender: gender}});
 			}}>
 			Patient Deatils:
 			<br/>

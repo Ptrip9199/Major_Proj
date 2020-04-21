@@ -33,4 +33,11 @@ class Visits(Document):
     pat_id = ReferenceField("Patient")
     weight = FloatField()
     height = IntField()
-    vaccine = ListField(StringField())
+    vaccines = ListField(StringField(default=[]))
+
+
+class Vaccines(Document):
+    meta = {"collection":"Vaccines"}
+    name = StringField()
+    details = StringField()
+    stock = IntField()

@@ -3,6 +3,7 @@ from graphene.relay import Node
 from graphene_mongo import MongoengineConnectionField, MongoengineObjectType
 from models import Patient as PatientModel
 from models import Visits as VisitModel
+from models import Vaccines as VaccineModel
 from base64 import b64decode
 from database import conn
 
@@ -19,6 +20,11 @@ class Visits(MongoengineObjectType):
         model = VisitModel
         interfaces = (Node,)
 
+class Vaccines(MongoengineObjectType):
+    class Meta:
+        model= VaccineModel
+        interfaces = (Node,)
+        
 #query class 
 class Query(graphene.ObjectType):
     name = 'Query'
@@ -93,6 +99,8 @@ class CreateVisit(graphene.Mutation):
         date = graphene.types.datetime.DateTime()
         patid = graphene.String()
         vaccines = graphene.List(graphene.String)
+    
+
     ok = graphene.Boolean()
     visit = graphene.Field(lambda: Visits)
 #adding a visit requires two things
