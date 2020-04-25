@@ -49,10 +49,21 @@ function PatientSearch ()  {
    if(loading) return <Spinner animation="border" role="status" />
 
    if(data)
-       return (
-            <PatientLoad props={data}/>
-        );
-
+            {
+              console.log(data)
+              if(data.patients.length)
+              {
+                return <PatientLoad props={data}/>
+              }
+            else{
+              return(
+                  <>
+                  <p>Patient with Mobile Number:"{mob_num}" not found</p>
+                  <Button type="button" href="/searchpatient">Search Again</Button>
+                  <Button type="button" href="/addpatient">Add New Patient</Button>
+                  </>
+            );}
+      }
 	return (
 		<>
 		<Form onSubmit = {e => {

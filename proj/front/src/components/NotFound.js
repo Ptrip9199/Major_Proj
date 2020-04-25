@@ -4,7 +4,8 @@ import React from "react";
 export default function NotFound() {
   return (
     <div className="NotFound">
-      <h3>Sorry, page not found!</h3>
+      <h3>Error 404!</h3>
+      <p>Page not Found</p>
     </div>
   );
 }

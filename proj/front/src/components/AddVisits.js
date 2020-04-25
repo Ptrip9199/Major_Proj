@@ -4,7 +4,7 @@ import {useMutation} from '@apollo/react-hooks';
 import {Form,Col,Row} from 'react-bootstrap';
 import {ADD_VISIT} from "./graphql";
 import PatientSearch from "./PatientSearch";
-import {Formik,Field} from 'formik';
+import {Formik,Field,FastField} from 'formik';
 import {Redirect } from 'react-router-dom';
 import * as Yup from 'yup';
 import Home from './Home';
@@ -13,7 +13,7 @@ export default function AddVisits(props){
 	 function done(e){
 	 	e.preventDefault()
 	 	return(
-	 		<Redirect to="/"/>
+	 		<Redirect to="/" />
 	 		)
 	 }
 
@@ -22,7 +22,7 @@ export default function AddVisits(props){
 	if(data){
 		return(<>
 				<p>Added new visit to patient</p>
-				<Button onClick={done}>Okay</Button>			
+				<Button type="button" href="/searchpatient">Okay</Button>			
 			</>);
 	}
 
@@ -40,8 +40,8 @@ export default function AddVisits(props){
 		</>)
 	}
 	const validation= Yup.object().shape({
-		height:Yup.number("Please enter a number"),
-		weight:Yup.number("Please enter a number")
+		height:Yup.number().required().positive().integer(),
+		weight:Yup.number().required().positive().integer()
 	});	
 
 	return(
@@ -51,7 +51,6 @@ export default function AddVisits(props){
 		initialValues={{weight:"",height:"",vaccines:""}}
 		validationSchema={validation}
 		onSubmit={(values,actions) => {
-			console.log(values);
 			addVisit({variables:{date:(new Date().toISOString().split('.')[0]+"Z"),weight:values.weight,height:values.height,patid:props.props,vaccines:values.vaccines}})
 			actions.setSubmitting(false);
 			
@@ -71,7 +70,7 @@ export default function AddVisits(props){
 			<br/>
 			<Row>
 			<Col sm={5}>
-			<Field 
+			<FastField 
 				className="form-control"
 				placeholder="Height"
 				name = "height"
@@ -81,9 +80,11 @@ export default function AddVisits(props){
 				onBlur={handleBlur}
 
 			/>
+			{touched.height && errors.height ? (
+				<div>{errors.height}</div>):null}
 			</Col>
 			<Col sm={5}>
-			<Field
+			<FastField
 				placeholder="Weight"
 				name = "weight"
 				type = "number"

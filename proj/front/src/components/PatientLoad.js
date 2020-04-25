@@ -1,10 +1,10 @@
 import React from 'react'
 import VisitsLoad from "./VisitsLoad";
-import {Form,Row,Col} from "react-bootstrap";
-
+import {Form,Row,Col,Button} from "react-bootstrap";
+import {Redirect} from 'react-router-dom';
 export default function PatientLoad(props){
  	
- 	    return(
+      return(
       	<div>
       	 {props.props.patients.map( patient => 
         <>   
@@ -69,8 +69,6 @@ export default function PatientLoad(props){
           )}
       	</div>
       	);
-
- 
 }
 
 

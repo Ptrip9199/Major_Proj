@@ -12,8 +12,7 @@ export default function Routes( {appProps} ) {
     <Switch>
       <Route path="/" exact component={Home} appProps={appProps}/>
       <Route path="/searchpatient" exact component={PatientSearch} appProps={appProps}/>
-      <Route path="/addpatient" exact component={PatientAdd} appProps={appProps}/>
-      
+      <Route path="/addpatient" exact component={PatientAdd} appProps={appProps}/>      
       { /* Finally, catch all unmatched routes */ }
 	  <Route component={NotFound}/>
     </Switch>

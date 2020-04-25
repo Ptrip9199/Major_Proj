@@ -28,10 +28,14 @@ class Vaccines(MongoengineObjectType):
 #query class 
 class Query(graphene.ObjectType):
     name = 'Query'
-#    find_patients = MongoengineConnectionField(Patients)
+#    find_patie nts = MongoengineConnectionField(Patients)
 #    find_visits = MongoengineConnectionField(Visits)
     patients = graphene.List(Patients,last=graphene.Int(default_value=0),fname=graphene.String(default_value="NULL"),mobNm=graphene.String(default_value="NULL"))
     visits = graphene.List(Visits,last=graphene.Int(default_value=0))
+    vaccines = graphene.List(Vaccines)
+
+    def resolve_vaccines(self,info):
+        return VaccineModel.objects.all()
 
     def resolve_visits(self,info,last):
         data = VisitModel.objects.all()
@@ -56,8 +60,32 @@ class Query(graphene.ObjectType):
 
 #classes for Mutations
 
+
+class CreateVaccines(graphene.Mutation):
+    
+    class Arguments:
+        name = graphene.String()
+        description = graphene.String()
+        stock = graphene.Int()
+    
+    ok = graphene.Boolean()
+    vaccine = graphene.Field(lambda: Vaccines)
+    def mutate(self,info,name,description,stock):
+        if(VaccineModel.objects(name=name)):
+            vac = VaccineModel.objects(name=name)[0]
+        else:
+            vac = VaccineModel()
+            vac.name = name
+            vac.description = description
+        #this way I might need an extra update function, which I think is a better idea as packe size becomes smaller while searching.
+        vac.stock = stock
+        if vac.save():
+           ok = True
+        else:
+            ok = False
+        return CreateVaccines(vaccine=vac,ok=ok)
+
 class CreatePatient(graphene.Mutation):
-    """docstring for CreatePatients"""
 
     class Arguments:
         fname = graphene.String()
@@ -88,8 +116,11 @@ class CreatePatient(graphene.Mutation):
         pat.mobile_nm = mobilenm
         pat.email_id = emailid
         pat.visits_done=[]
-        pat.save()
-        return CreatePatient(patient=pat)
+        if pat.save():
+            ok = True
+        else:
+            ok= False
+        return CreatePatient(patient=pat,ok=ok)
 
 class CreateVisit(graphene.Mutation):
 
@@ -116,16 +147,21 @@ class CreateVisit(graphene.Mutation):
         new_vis.pat_id = pat
         new_vis.date = date
         new_vis.vaccines = vaccines
-        new_vis.save()
-        pat.visits_done.append(new_vis)
-        pat.save()
-        return CreateVisit(visit=new_vis)
+        if new_vis.save():
+            pat.visits_done.append(new_vis)
+            if pat.save():
+                ok = True
+            else:
+                ok = False
+        else:
+            ok = False        
+        return CreateVisit(visit= new_vis ,ok = ok)
 
 #Mutation Class
 class Mutation(graphene.ObjectType):
     """docstring for Mutations"""
     Create_patient = CreatePatient.Field()
     Create_visit = CreateVisit.Field()
-
+    Create_vaccines = CreateVaccines.Field()
 
 schema=graphene.Schema( query=Query , mutation=Mutation)

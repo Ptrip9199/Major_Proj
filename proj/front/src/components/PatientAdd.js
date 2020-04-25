@@ -48,13 +48,14 @@ function PatientAdd () {
 		var mobnm_regex = "[1-9]{1}[0-9]{9}";
 	   	var res = mobile.match(mobnm_regex)
 
-
-	   	return (res && lName.length>0 );
+	   	return (res && lName && email && gender && ParentNm);
 	}
 
 
 
 	return(
+			<>
+
 			<div>
 			<Form onSubmit=	{e => {
 				e.preventDefault();
@@ -95,15 +96,17 @@ function PatientAdd () {
 				<Form.Check
 	          type="radio"
 	          label="Male"
-	          name="Gender"
-   	    	  id="Male"
+	          name="gender"
+   	    	  value="Male"
+   	    	  onChange={e=> setgender(e.target.value)}
    	    	    /></Col>
     		    <Col>
     		    <Form.Check
         	  type="radio"
-        	  name="Gender"
+        	  name="gender"
         	  label="Female"
-        	  id="Female"
+        	  value="Female"
+        	  onChange={e=> setgender(e.target.value)}
         	/>
         	</Col>
         	</Row>
@@ -152,7 +155,7 @@ function PatientAdd () {
          	</Button>
 			</Form>			
 			</div>
-			
+			</>
 	);
 }
 
