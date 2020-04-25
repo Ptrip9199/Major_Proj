@@ -6,7 +6,7 @@ from models import Visits as VisitModel
 from models import Vaccines as VaccineModel
 from base64 import b64decode
 from database import conn
-
+from graphql import GraphQLError
 conn()
 #classes for Queries
 class Patients (MongoengineObjectType):
@@ -30,7 +30,7 @@ class Query(graphene.ObjectType):
     name = 'Query'
 #    find_patie nts = MongoengineConnectionField(Patients)
 #    find_visits = MongoengineConnectionField(Visits)
-    patients = graphene.List(Patients,last=graphene.Int(default_value=0),fname=graphene.String(default_value="NULL"),mobNm=graphene.String(default_value="NULL"))
+    patients = graphene.List(Patients,last=graphene.Int(default_value=0) ,fname=graphene.String(default_value="NULL") ,lname=graphene.String(default_value="NULL") ,mobNm=graphene.String(default_value="NULL"))
     visits = graphene.List(Visits,last=graphene.Int(default_value=0))
     vaccines = graphene.List(Vaccines)
 
@@ -43,9 +43,12 @@ class Query(graphene.ObjectType):
             data = data[data.count()-last:]
         return data
 
-    def resolve_patients(self,info,last,fname,mobNm):
+    def resolve_patients(self, info, last, fname, mobNm,lname):
         if fname!="NULL":
-            data = PatientModel.objects(f_name=fname)
+            if lname!="NULL":
+               data = PatientModel.objects(f_name=fname, l_name=lname)
+            else:
+                data = PatientModel.objects(f_name=fname)
 
         if mobNm!="NULL":
             data = PatientModel.objects(mobile_nm= mobNm)
@@ -104,23 +107,59 @@ class CreatePatient(graphene.Mutation):
     def mutate(self,info,fname,lname,DoB,gender,Parentname,mobilenm,emailid,visitsdone=[]):
       #tryin to have unique mobile number for each patient  
       #add some authentication, so thst a perseon is not able to modify some other record 
-        if (PatientModel.objects(mobile_nm=mobilenm)):
-            pat = PatientModel.objects(mobile_nm=mobilenm)[0]
+        if (PatientModel.objects(mobile_nm=mobilenm,f_name=fname)):
+            raise GraphQLError('Person with same name and number already exists.Please try searching.')
         else:
             pat = PatientModel()        
-        pat.f_name = fname
-        pat.l_name = lname
-        pat.DoB = DoB
-        pat.Parent_name = Parentname
-        pat.gender = gender
-        pat.mobile_nm = mobilenm
-        pat.email_id = emailid
-        pat.visits_done=[]
-        if pat.save():
-            ok = True
-        else:
-            ok= False
+            pat.f_name = fname
+            pat.l_name = lname
+            pat.DoB = DoB
+            pat.Parent_name = Parentname
+            pat.gender = gender
+            pat.mobile_nm = mobilenm
+            pat.email_id = emailid
+            pat.visits_done=[]
+            if pat.save():
+                ok = True
+            else:
+                pat = Null 
+                ok= False
         return CreatePatient(patient=pat,ok=ok)
+
+class UpdatePatient(graphene.Mutation):
+    
+    class Arguments:
+        fname = graphene.String(required=False)
+        lname = graphene.String(required=False)
+        DoB = graphene.types.datetime.Date(required=False)
+        gender = graphene.String(required=False)
+        Parentname = graphene.List(graphene.String)
+        mobilenm = graphene.String(required=False)
+        emailid = graphene.String(required=False)
+        graphqlid = graphene.String()
+        #visitsdone = graphene.List(graphene.String)
+
+    ok = graphene.Boolean()
+    patient = graphene.Field(lambda: Patients)
+
+    def mutate(self,info,graphqlid,fname=None,lname=None,DoB=None,gender=None,mobilenm=None,emailid=None,Parentname=[]):
+        patid = b64decode(graphqlid).decode('utf-8').split(':')[1]
+        if (PatientModel.objects(id=patid) == []):
+            raise GraphQLError('Person with same name and number already exists.Please try searching.')
+        else:
+            pat = PatientModel.objects(id=patid)[0]
+            if fname!=None : pat.f_name = fname 
+            if lname!=None : pat.l_name = lname
+            if DoB!=None : pat.DoB = DoB
+            if Parentname!=[] : pat.Parent_name = Parentname
+            if gender!=None : pat.gender = gender
+            if mobilenm!=None : pat.mobile_nm = mobilenm
+            if emailid!=None : pat.email_id = emailid
+            if pat.save():
+                ok = True
+            else:
+                ok= False
+        return UpdatePatient(patient=pat,ok=ok)        
 
 class CreateVisit(graphene.Mutation):
 
@@ -142,6 +181,8 @@ class CreateVisit(graphene.Mutation):
         patid = b64decode(patid).decode('utf-8').split(':')[1] 
         #extract the mongodb id of the patient. shown in graphql as 'Patients:id' encoded as base64
         pat = PatientModel.objects(id=patid)[0]
+        if pat==[]:
+            raise GraphQLError("Not able to find the patient. Please try again after checking if all details are correct.")
         new_vis.height = height
         new_vis.weight = weight
         new_vis.pat_id = pat
@@ -163,5 +204,6 @@ class Mutation(graphene.ObjectType):
     Create_patient = CreatePatient.Field()
     Create_visit = CreateVisit.Field()
     Create_vaccines = CreateVaccines.Field()
+    Update_patient= UpdatePatient.Field()
 
 schema=graphene.Schema( query=Query , mutation=Mutation)
