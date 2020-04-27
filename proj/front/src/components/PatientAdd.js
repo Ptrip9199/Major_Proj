@@ -62,10 +62,11 @@ function PatientAdd () {
 				console.log("try")
 				addPat({variables:{fname: fName,lname: lName,DoB: DoB, Parentname: ParentNm.split(","),mobilenm: mobile.toString(),emailid: email, gender: gender}});
 			}}>
-			Patient Deatils:
+			<h2>Patient Details:</h2>
 			<br/>
 			<Row>
 			<Col sm={5}>
+			<Form.Label>First Name</Form.Label>
 			<Form.Control
 				placeholder="First Name"
 				type = "text"
@@ -73,6 +74,7 @@ function PatientAdd () {
 				onChange={e=> setfName(e.target.value)}
 			/></Col>
 			<Col sm={5}>
+			<Form.Label>Last Name</Form.Label>
 			<Form.Control
 				placeholder="Last Name"
 				type = "text"
@@ -83,6 +85,7 @@ function PatientAdd () {
 			<br/>
 			<Row>
 			<Col sm={5}>
+			<Form.Label>DoB</Form.Label>
 			<Form.Control 
 				placeholder="DoB"
 				type = "date"
@@ -92,15 +95,17 @@ function PatientAdd () {
 			<Col sm={5}>
 			<Form.Group>
 			<Row><Col>
-				<Form.Label>Gender:</Form.Label></Col><Col>	
+				<Form.Label>Gender:</Form.Label>	
+				</Col>
+				<Col>
 				<Form.Check
 	          type="radio"
 	          label="Male"
 	          name="gender"
    	    	  value="Male"
    	    	  onChange={e=> setgender(e.target.value)}
-   	    	    /></Col>
-    		    <Col>
+   	    	    />
+    		    
     		    <Form.Check
         	  type="radio"
         	  name="gender"
@@ -114,10 +119,11 @@ function PatientAdd () {
 			</Col>
 			</Row>
 			<br/>
-			Parent Info:
+			<h4>Parent Info:</h4>
 			<br/>
 			<Row>
 			<Col sm={5}>
+			<Form.Label>Parent Names</Form.Label>
 			<Form.Control
 				placeholder="Parent Names(seperated by ,)"
 				type = "text"
@@ -132,6 +138,7 @@ function PatientAdd () {
 			<Row>
 
 			<Col sm={5}>
+			<Form.Label>Mobile Number</Form.Label>
 			<Form.Control
 				placeholder="Mobile Number"
 				type = "number"
@@ -141,6 +148,7 @@ function PatientAdd () {
 			/>
 			</Col>
 			<Col sm={5}>
+			<Form.Label>Email-id</Form.Label>
 			<Form.Control
 				placeholder="Email ID"
 				type = "email"

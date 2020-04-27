@@ -18,9 +18,14 @@ mutation($fname:String, $lname:String, $DoB:Date, $Parentname:[String], $mobilen
 }
 `
 
+
+// const UPDATE_PATIENT = gql`
+//   mutation
+// `
+
 const PATIENT_SEARCH = gql`
   query($mobNm:String!) {
-    patients(mobNm: $mobNm){
+    patients(mobNm: $mobNm,last:2){
       id
       fName
       lName
