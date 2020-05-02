@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="Home">
       <div className="lander">
-        <h1>Add main website here</h1>
+        <h1>Main Homepage</h1>
         <p>Welcome to the website!!</p>
       </div>
     </div>

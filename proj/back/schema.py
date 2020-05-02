@@ -41,6 +41,7 @@ class Query(graphene.ObjectType):
         data = VisitModel.objects.all()
         if last != 0:
             data = data[data.count()-last:]
+        print(info)
         return data
 
     def resolve_patients(self, info, last, fname, mobNm,lname):
@@ -75,18 +76,40 @@ class CreateVaccines(graphene.Mutation):
     vaccine = graphene.Field(lambda: Vaccines)
     def mutate(self,info,name,description,stock):
         if(VaccineModel.objects(name=name)):
-            vac = VaccineModel.objects(name=name)[0]
+            raise GraphQLError('Person with same name and number already exists.Please try searching.')
         else:
             vac = VaccineModel()
             vac.name = name
             vac.description = description
-        #this way I might need an extra update function, which I think is a better idea as packe size becomes smaller while searching.
-        vac.stock = stock
+            vac.stock = stock
+        
         if vac.save():
            ok = True
         else:
             ok = False
         return CreateVaccines(vaccine=vac,ok=ok)
+
+class UpdateVaccineStock(graphene.Mutation):
+
+    class Arguments:
+        vacid = graphene.String()
+        stock = graphene.Int()
+    
+    ok = graphene.Boolean()
+    vaccine = graphene.Field(lambda: Vaccines)
+    def mutate(self,info,stock,vacid):
+        vacid = b64decode(vacid).decode('utf-8').split(':')[1]
+        if (VaccineModel.objects(id=vacid)) :
+            vac = VaccineModel.objects(id=vacid)[0]
+            vac.stock = stock
+        else:
+            raise GraphQLError("Sorry Vaccine does not exist!")
+        
+        if vac.save():
+            ok = True
+        else:
+            ok = False
+        return CreateVaccines(vaccine=vac,ok=ok) 
 
 class CreatePatient(graphene.Mutation):
 
@@ -145,7 +168,7 @@ class UpdatePatient(graphene.Mutation):
     def mutate(self,info,graphqlid,fname=None,lname=None,DoB=None,gender=None,mobilenm=None,emailid=None,Parentname=[]):
         patid = b64decode(graphqlid).decode('utf-8').split(':')[1]
         if (PatientModel.objects(id=patid) == []):
-            raise GraphQLError('Person with same name and number already exists.Please try searching.')
+            raise GraphQLError('Patient does not exist.Please try adding a new patient.')
         else:
             pat = PatientModel.objects(id=patid)[0]
             if fname!=None : pat.f_name = fname 
@@ -205,5 +228,6 @@ class Mutation(graphene.ObjectType):
     Create_visit = CreateVisit.Field()
     Create_vaccines = CreateVaccines.Field()
     Update_patient= UpdatePatient.Field()
+    Update_vaccine_stock = UpdateVaccineStock.Field()
 
 schema=graphene.Schema( query=Query , mutation=Mutation)
