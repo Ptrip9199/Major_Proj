@@ -6,6 +6,7 @@ import {ADD_VISIT} from "./graphql";
 import PatientSearch from "./PatientSearch";
 import {Formik,Field,FastField} from 'formik';
 import {Redirect } from 'react-router-dom';
+import VaccineLoad from './VaccineLoad';
 import * as Yup from 'yup';
 import Home from './Home';
 
@@ -40,8 +41,8 @@ export default function AddVisits(props){
 		</>)
 	}
 	const validation= Yup.object().shape({
-		height:Yup.number().required().positive().integer(),
-		weight:Yup.number().required().positive().integer()
+		height:Yup.number().typeError("Must be a number").required().positive().integer(),
+		weight:Yup.number().typeError("Must be a number").required().positive().integer(),
 	});	
 
 	return(
@@ -51,6 +52,7 @@ export default function AddVisits(props){
 		initialValues={{weight:"",height:"",vaccines:""}}
 		validationSchema={validation}
 		onSubmit={(values,actions) => {
+			actions.setSubmitting(true)
 			addVisit({variables:{date:(new Date().toISOString().split('.')[0]+"Z"),weight:values.weight,height:values.height,patid:props.props,vaccines:values.vaccines}})
 			actions.setSubmitting(false);
 			
@@ -74,7 +76,6 @@ export default function AddVisits(props){
 				className="form-control"
 				placeholder="Height"
 				name = "height"
-				type = "number"
 				value= {values.height}
 				onChange={handleChange}
 				onBlur={handleBlur}
@@ -87,7 +88,6 @@ export default function AddVisits(props){
 			<FastField
 				placeholder="Weight"
 				name = "weight"
-				type = "number"
 				value= {values.weight}
 				onChange={handleChange}
 				onBlur={handleBlur}
@@ -107,13 +107,15 @@ export default function AddVisits(props){
 				 <option value="Vac 1">Vac 1</option>
      			 <option value="Vac 2">Vac 2</option>
    				 <option value="Vac 3">Vac 3</option>
+   				 
    			</Field>
    			</div>
 			</Col>
 			</Row>
-			<Button type="submit" >
+			<Button type="submit" disabled={isSubmitting}>
            		Add
          	</Button>
+         	<VaccineLoad/>
 		</Form>
 		)}
 		</Formik>

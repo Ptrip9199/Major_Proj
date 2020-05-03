@@ -17,11 +17,11 @@ export default function VisitLoad(props){
           {props.val2.edges.map(visit => 
             <>
             {console.log(visit.node.vaccines)}
-            <tr>
-            <td>{visit.node.date}</td>
-            <td>{visit.node.weight}</td>
-            <td>{visit.node.height}</td>
-            <td>{visit.node.vaccines}</td>
+            <tr key={visit.node.id}>
+            <td >{visit.node.date}</td>
+            <td >{visit.node.weight}</td>
+            <td >{visit.node.height}</td>
+            <td >{visit.node.vaccines}</td>
             </tr>
             </>)}
            </tbody>

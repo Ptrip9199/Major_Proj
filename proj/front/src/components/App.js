@@ -14,7 +14,8 @@ export default function App(){
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Nav>
         <Nav.Link href="/addpatient">Add Patient</Nav.Link>
-        <Nav.Link href="/searchpatient">Search Patient</Nav.Link>    
+        <Nav.Link href="/searchpatient">Search Patient</Nav.Link>
+        <Nav.Link href="/inventoryview"> View inventory</Nav.Link>   
       </Nav>
       </Navbar>
    		<Routes />
